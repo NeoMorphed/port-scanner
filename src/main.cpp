@@ -28,8 +28,6 @@ typedef uint32_t u32;
 // @Cleanup There are many indefs which clutter up the code. We should figure out a way to implement windows and linux
 // in a cleaner fashion.
 
-// @Cleanup Possible bug with windows version where some ports only show up after scanning a second time. Not sure.
-
 struct Port_Scan_Thread_Info
 {
 	int* valid_ports;
@@ -310,7 +308,7 @@ void scan_ports(Port_Scan_Thread_Info* info)
 		// struct sockaddr_in sa;
 		// sa.sin_family = AF_INET;
 		addrinfo* result = NULL;
-		addrinfo* ptr = NULL;
+		//addrinfo* ptr = NULL;
 		addrinfo hints;
 
 		memset(&hints, 0, sizeof(hints));
@@ -333,8 +331,8 @@ void scan_ports(Port_Scan_Thread_Info* info)
 #ifdef __LINUX__
 		int sock = 0;
 #endif
-		ptr = result;
-		sock = socket(ptr->ai_family, ptr->ai_socktype, ptr->ai_protocol);
+		//ptr = result;
+		sock = socket(result->ai_family, result->ai_socktype, result->ai_protocol);
 
 #ifdef __WINDOWS__
 		if (sock == INVALID_SOCKET) {
@@ -360,7 +358,7 @@ void scan_ports(Port_Scan_Thread_Info* info)
 		fcntl(sock, F_SETFL, flags);
 #endif
 		// Connect to server
-		success = connect(sock, ptr->ai_addr, (int)ptr->ai_addrlen);
+		success = connect(sock, result->ai_addr, (int)result->ai_addrlen);
 #ifdef __WINDOWS__
 		if (success == SOCKET_ERROR) {
 			if (WSAGetLastError() != WSAEWOULDBLOCK) {
